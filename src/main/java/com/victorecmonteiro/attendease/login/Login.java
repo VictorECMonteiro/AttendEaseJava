@@ -1,6 +1,7 @@
 package com.victorecmonteiro.attendease.login;
 
 
+import com.victorecmonteiro.attendease.user.Usuario;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
@@ -25,6 +26,8 @@ public class Login {
     public void setSenha(String senha){
         this.senha = senha;
     }
+
+
 
     @Nullable
     public String getToken() {
@@ -59,6 +62,8 @@ public class Login {
         return senha;
     }
 
+    @OneToOne(mappedBy = "login", cascade = CascadeType.ALL)
+    private Usuario usuario;
 
 }
 

@@ -26,7 +26,12 @@ public class AdminBootstrap implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
+
+
         Login login = new Login();
+        if(loginRepository.countAllByUsername(adminusername)>0){
+            return;
+        }
         login.setUsername(adminusername);
         login.setSenha(passwordEncoder.encode(adminpass));
         login.setFuncao("Professor");

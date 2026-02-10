@@ -8,6 +8,7 @@ import java.util.Optional;
 @Repository
 public interface LoginRepository extends CrudRepository<Login, Integer> {
     Optional<Login> findByusername(String string);
+    Long countAllByUsername(String string);
 }
 
 

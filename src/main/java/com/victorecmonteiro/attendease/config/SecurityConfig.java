@@ -21,15 +21,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Autowired private AuthEntryPoint authEntryPoint;
-
+    private JWTFilter jwtFilter;
 
 
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    SecurityFilterChain filterChain(HttpSecurity http, LoginService loginService) throws Exception{
 
         http.csrf(csrf-> csrf.disable()).authorizeHttpRequests(
-                authorizeRequests->authorizeRequests.requestMatchers("/login/login")
+                authorizeRequests->authorizeRequests.requestMatchers(
+                        "/login/login",
+                        "/v3/api-docs/**",
+                        "/swagger-ui/index.html",
+                        "/swagger-ui/**"
+                        )
                         .permitAll()
                         .anyRequest()
                         .authenticated()).exceptionHandling(
@@ -37,7 +42,7 @@ public class SecurityConfig {
                                 excepctionHandling -> excepctionHandling.authenticationEntryPoint(authEntryPoint))
                 .sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter(loginService), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
 
@@ -59,8 +64,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    JWTFilter jwtFilter(){
-        return new JWTFilter();
+    JWTFilter jwtFilter(LoginService loginService){
+        return new JWTFilter(loginService);
     }
 
 

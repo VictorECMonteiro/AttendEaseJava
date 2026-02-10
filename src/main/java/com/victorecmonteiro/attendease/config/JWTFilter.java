@@ -11,14 +11,20 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-
+@Component
 public class JWTFilter extends OncePerRequestFilter {
     @Autowired private JWTGenerator jwtGenerator;
-    @Autowired private LoginService customUserDetailsService;
+
+    private final LoginService customUserDetailsService;
+
+    public JWTFilter(LoginService customUserDetailsService) {
+        this.customUserDetailsService = customUserDetailsService;
+    }
 
     private String getJWTFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
@@ -36,8 +42,15 @@ public class JWTFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain)
             throws jakarta.servlet.ServletException, IOException {
+        String path = request.getServletPath();
 
-
+        if (path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api-docs")
+                || path.startsWith("/login/login")
+                || path.startsWith("/swagger")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         String token = getJWTFromRequest(request);
 
 

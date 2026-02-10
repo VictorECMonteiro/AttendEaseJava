@@ -1,4 +1,4 @@
-package com.victorecmonteiro.attendease.login;
+package com.victorecmonteiro.attendease.login.dto;
 
 import org.antlr.v4.runtime.misc.NotNull;
 
@@ -14,8 +14,7 @@ public class LoginDTO {
     public LoginDTO(String senha, String funcao, String username) {
         this.senha = senha;
         this.funcao = funcao;
-        this.username = username
-        ;
+        this.username = username;
     }
 
     public String getSenha() {

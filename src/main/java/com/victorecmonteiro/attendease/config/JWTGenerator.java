@@ -7,13 +7,26 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.time.Instant;
 import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JWTGenerator {
-    private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    private final Key key;
+    public JWTGenerator(
+            @Value("${app.properties.JWTKeyBase64}") String secretBase64
+    ) {
+        byte[] decodedKey = java.util.Base64
+                .getDecoder()
+                .decode(secretBase64);
+
+        this.key = Keys.hmacShaKeyFor(decodedKey);
+    }
+
+
 
     public String generateToken(Authentication authentication) {
         String username = authentication.getName();

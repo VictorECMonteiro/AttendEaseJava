@@ -1,6 +1,8 @@
 package com.victorecmonteiro.attendease.login;
 
 import com.victorecmonteiro.attendease.config.JWTGenerator;
+import com.victorecmonteiro.attendease.login.dto.LoginCreateDTO;
+import com.victorecmonteiro.attendease.login.dto.LoginDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,20 +26,27 @@ public class LoginController {
 
     @PreAuthorize("hasRole('Professor')")
     @PostMapping("/createUser")
-    public ResponseEntity<LoginDTO> createUser(
+    public ResponseEntity<Boolean> createUser(
             @RequestBody
             @Validated
-            LoginDTO dto
+            LoginCreateDTO dto
     ){
-        Login usuario = loginService.createUser(dto);
+        try {
+            boolean usuario = loginService.createUser(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(true);
+        }
+        catch(Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
 
-        LoginDTO response = new LoginDTO(
-                usuario.getSenha(),
-                usuario.getFuncao(),
-                usuario.getSenha()
-        );
+        }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+//        LoginDTO response = new LoginDTO(
+//                usuario.getSenha(),
+//                usuario.getFuncao(),
+//                usuario.getSenha()
+//        );
+
+
     }
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody @Validated LoginDTO dto){
